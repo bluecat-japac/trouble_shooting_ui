@@ -1,0 +1,131 @@
+<!--
+ Copyright 2019 BlueCat Networks (USA) Inc. and its affiliates
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+{% extends "base.html" %}
+
+{% block css %}
+<style>
+    .col-md-2.text {
+        width: 100px;
+        padding-top:15px;
+        padding-right:0px;
+        text-align: right;
+    }
+
+    .col-md-2.text-result {
+        width: 100px;
+        padding-top: 145px;
+        padding-right: 0px;
+        text-align: right;
+    }
+    .lb-require {
+        color: red;
+        font-size: 13px;
+        padding-top: 15px;
+    }
+
+</style>
+<link rel="stylesheet" href="css/trouble_shooting_ui_page.css?version={{ g.version | urlencode }}">
+{% endblock %}
+
+{% block title %}
+{{ text['title'] }}
+{{  data }}
+{% endblock %}
+
+{% block heading %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block custom %}
+
+<div class="container">
+    <div class="row" style="vertical-align:text-right">
+        <div class="col-md-2 text" >
+            <span>BAM</span>
+        </div>
+        <div class="col-md-4">
+            <input id='bam' type="text" name="txt-bam" disabled>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text">
+            <span>Configuration</span>
+        </div>
+        <div class="col-md-4 text-right" >
+            <select id="sl-configuration" onchange="updateServerList()">
+                <!-- configuration id show here -->
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text">
+            <span>Server</span>
+        </div>
+        <div class="col-md-4">
+            <select id="sl-server">
+                <!-- server name/id show here -->
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text">
+            <span>Tool</span>
+        </div>
+        <div class="col-md-4">
+            <select id="sl-tool" onchange="setPlaceholder()">
+                <option value="ping" selected>ping</option>
+                <option value="dig">dig</option>
+                <option value="traceroute">traceroute</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text">
+            <span>Parameters</span>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="txt-parameters" onkeyup="checkSubmit()">
+        </div>
+        <div class="col-sm-4">
+            <label class="lb-require" id="lb-require"></label>
+        </div>
+    </div>
+    <div class="row" style="margin-left:100px;padding-bottom:10px; padding-left:10px">
+        <button class="btn-primary submit" id="submit">Submit
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text-result">
+            <span>Result</span>
+        </div>
+        <div class="col-md-6">
+            <textarea readonly class="form-control" rows="15" id="result"></textarea>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="js/trouble_shooting_ui_page.js?version={{ g.version | urlencode }}"></script>
+<script>
+    var server_str = '{{ server_str }}'
+    var configuration_name = '{{ configuration_name }}'
+    var configuration_id = '{{ configuration_id }}'
+
+</script>
+{% endblock %}
