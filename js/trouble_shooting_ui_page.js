@@ -16,7 +16,7 @@
 // JavaScript for your page goes in here.
 
 $(document).ready(function () {
-    
+    window.submitted = false;
     $('#txt-parameters').attr("placeholder", "<specify IP address>");
     $('#submit').prop('disabled', true);
     $('#sl-config').prop('disabled', true);
@@ -41,6 +41,23 @@ function checkInput(){
     }
     if (server != ""){
         $('#sl-server').prop('disabled', false);
+    }
+}
+
+function unlockGUI(boolean) {
+    if (boolean == true) {
+        $('#sl-configuration').prop('disabled', false);
+        $('#sl-server').prop('disabled', false);
+        $('#sl-tool').prop('disabled', false);
+        $('#txt-parameters').prop('disabled', false);
+        $('#submit').prop('disabled', false);
+    }
+    else if (boolean == false) {
+        $('#sl-configuration').prop('disabled', true);
+        $('#sl-server').prop('disabled', true);
+        $('#sl-tool').prop('disabled', true);
+        $('#txt-parameters').prop('disabled', true);
+        $('#submit').prop('disabled', true);
     }
 }
 
@@ -126,9 +143,22 @@ $("#submit").click(function (e) {
     $('#lb-require').html("");
     document.getElementById("txt-parameters").style.borderColor ="#707889"
 
+    config = $('#sl-configuration option:selected').text();
     server = $('#sl-server option:selected').text();
     tool = $('#sl-tool option:selected').text();
     parameters = $('#txt-parameters').val();
+    var d = new Date();
+    var milisecond = d.getMilliseconds().toString()
+    var second = d.getSeconds().toString();
+    var minute = d.getMinutes().toString();
+    var hour = d.getHours().toString();
+    var day = d.getDate().toString();
+    var month = d.getMonth().toString();
+    date = milisecond.concat(second, minute, hour, day, month)
+    var s_name = server.split('(')[0]
+    var server_name_re = '/\W/g'
+    var server_name = s_name.replace(/\W/g, '_')
+    window.clientID = server_name.concat('_', date)
 
     var ip_pattern = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
     var ping_re = new RegExp("^" + ip_pattern + "$")
@@ -152,32 +182,79 @@ $("#submit").click(function (e) {
         }
     }
 
+    var j_data = {
+        "config-name": config,
+        "server": server,
+        "tool": tool,
+        "param": parameters,
+        "client-id": window.clientID
+    }
+
     var is_check = document.getElementById('lb-require').textContent;
     if ( is_check == ""){
-        $('#sl-configuration').prop('disabled', true);
-        $('#sl-server').prop('disabled', true);
-        $('#sl-tool').prop('disabled', true);
-        $('#txt-parameters').prop('disabled', true);
-        $('#submit').prop('disabled', true);
+        window.submitted = true;
+        unlockGUI(false);
         $('#result').val('Connecting...')
         $.ajax({
             url: '/trouble_shooting_ui/submit',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
-            data: JSON.stringify({
-                'server': server,
-                'tool': tool,
-                'parameters': parameters
-            }),
+            data: JSON.stringify(j_data),
             success: function (data) {
-                $('#sl-configuration').prop('disabled', false);
-                $('#sl-server').prop('disabled', false);
-                $('#sl-tool').prop('disabled', false);
-                $('#txt-parameters').prop('disabled', false);
-                $('#submit').prop('disabled', false);
                 $('#result').val(data['result'])
+                unlockGUI(false)
+                var interval = setInterval(function(){
+                    $.ajax({
+                        url: `/trouble_shooting_ui/stream_result?configName=${config}&serverName=${server}&Tool=${tool}&clientID=${window.clientID}`,
+                        type: 'get',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(j_data),
+                        success: function (data){
+                            var result = data[tool];
+                            var status = data['status'];
+                            unlockGUI(false)
+                            $('#result').val(result)
+                            if (status == true) {
+                                clearInterval(interval);
+                                unlockGUI(true)
+                                clearConnectionAPI(config, server, window.clientID);
+                                window.submitted = false;
+                            }
+                        }
+                    });
+                }, 1000);
             },
+            error: function(xhr, status, error) {
+                $('#result').val("Failed to get result while execute command. Please check the user logs for more information")
+                unlockGUI(true)
+            }
         });
     }
 })
+
+function clearConnectionAPI(config, server, clientID) {
+    if (window.submitted === true) {
+        $.ajax({
+            url: `/trouble_shooting_ui/stream_result?configName=${config}&serverName=${server}&clientID=${clientID}`,
+            type: 'DELETE',
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+    
+            },
+            error: function(xhr, status, error) {
+                $('#result').val("Failed to get result while execute command. Please check the user logs for more information")
+                unlockGUI(true)
+            }
+        });
+    }
+    
+}
+
+window.onbeforeunload = (function() {
+    config = $('#sl-configuration option:selected').text();
+    server = $('#sl-server option:selected').text();
+    clearConnectionAPI(config, server, window.clientID);
+});

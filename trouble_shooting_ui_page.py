@@ -17,8 +17,8 @@
 # Various Flask framework items.
 import os
 import sys
-
-from flask import render_template, jsonify, request
+import traceback
+from flask import render_template, jsonify, request, g
 from bluecat import route, util
 import config.default_config as config
 from main_app import app
@@ -26,7 +26,7 @@ from bluecat_portal.workflows.trouble_shooting_ui.common import common
 
 
 def module_path():
-    encoding = sys.getfilesystemencoding()
+    sys.getfilesystemencoding()
     return os.path.dirname(os.path.abspath(__file__))
 
 
@@ -74,10 +74,46 @@ def update_server_list():
 @util.exception_catcher
 def submit():
     if request.method == 'POST':
-        data = request.get_json()
-        server = data['server']
-        tool = data['tool']
-        param = data['parameters']
-        server_ip = server.split('(')[1][:-1]
-        output = common.prepare_ssh_command(server_ip, tool, param)
-        return jsonify({'result': output})
+        try:
+            data = request.get_json()
+            config_name = data['config-name']
+            server = data["server"]
+            server_ip = server.split('(')[1][:-1]
+            client_id = data['client-id']
+            param = data['param']
+            tool = data["tool"]
+            common.prepare_ssh_command(config_name, server, server_ip, client_id, tool, param)
+            return jsonify({'result': "Connecting..."})
+        except Exception as ex:
+            g.user.logger.error(
+                'Exception while run execute command:\n{}'.format(ex))
+            return jsonify({}), 500
+
+
+@route(app, '/trouble_shooting_ui/stream_result', methods=['GET', 'DELETE'])
+@util.workflow_permission_required('trouble_shooting_ui_page')
+@util.exception_catcher
+def stream_result():
+    try:
+        if request.method == 'GET':
+            config_name = request.args.get('configName')
+            server = request.args.get("serverName")
+            client_id = request.args.get('clientID')
+            tool = request.args.get("Tool")
+            stream_result, status = common.get_stream_result(config_name, server, client_id, tool)
+            result = {tool: stream_result, "status": status}
+            response = result
+        elif request.method == "DELETE":
+            config_name = request.args.get('configName')
+            server = request.args.get("serverName")
+            client_id = request.args.get('clientID')
+            common.clear_all_connection(config_name, server, client_id)
+            response = {"status": "Sucesss"}
+    except Exception as ex:
+        g.user.logger.error(ex)
+        g.user.logger.error(traceback.format_exc())
+        response = {"status": True}
+    finally:
+        return jsonify(response)
+
+

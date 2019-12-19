@@ -1,4 +1,3 @@
-
 # Copyright 2019 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,9 +58,8 @@ class TestCommon(unittest.TestCase):
     def test_get_bam_ip_exception(self, mock_os, mock_hasattr):
         mock_os.environ = {'no_bam_ip': ''}
         mock_hasattr.return_value = False
-        actual = common.get_bam_ip()
-        expect = Exception()
-        self.assertEqual(expect, actual)
+        with self.assertRaises(Exception):
+            common.get_bam_ip()
 
     @mock.patch('common.common.g')
     def test_get_server_list(self, mock_g):
@@ -73,7 +71,6 @@ class TestCommon(unittest.TestCase):
         actual = common.get_server_list(config_id)
         self.assertEqual(actual, expect)
         mock_g.user.get_api.return_value._api_client.service.getEntities.assert_called_once()
-
 
     @mock.patch('common.common.g')
     def test_ssh_open_connection_without_exception(self, mock_g):
@@ -135,47 +132,91 @@ class TestCommon(unittest.TestCase):
         expect = False
         self.assertEqual(expect, actual)
 
-    @mock.patch('common.common.g')
-    def test_exec_command_error(self, mock_g):
+    @mock.patch('common.common.management_result')
+    @mock.patch('common.common.iter')
+    @mock.patch('common.common.update_status_global_stream_result')
+    @mock.patch('common.common.update_result_global_stream_result')
+    def test_exec_command(self, mock_update_result_global_stream_result,
+                          mock_update_status_global_stream_result, mock_iter, mock_management_result):
         """
         :param mock_set_rule:
         :return:
         """
-        ssh = mock.Mock()
-        expect = 'error'
-        stderr = mock.Mock()
-        stderr.read.return_value.decode.return_value = expect
-        ssh.exec_command.return_value = ('', '', stderr)
-        actual = common.exec_command(ssh, '', 15)
-        self.assertEqual(expect, actual)
+        ssh = mock.MagicMock()
+        cmd = "ping 192.168.88.88"
+        config_name = "japac"
+        server = "bdds01(192.168.88.88)"
+        client_id = "123"
+        tool = "ping"
+        _, stdout, stderr = mock.MagicMock(), mock.MagicMock(), mock.MagicMock()
+        ssh.exec_command.return_value = _, stdout, stderr
+        mock_iter.return_value = ["a", "b"]
+        global management_result
+        management_result = mock.MagicMock()
+        common.exec_command(ssh, cmd, config_name, server, client_id, tool)
 
+    @mock.patch('common.common.iter')
     @mock.patch('common.common.g')
-    def test_exec_command_not_error(self, mock_g):
-        """
-        :param mock_set_rule:
-        :return:
-        """
-        ssh = mock.Mock()
-        expect = 'not error'
-        stdout = mock.Mock()
-        stdout.read.return_value.decode.return_value = expect
-        stderr = mock.Mock()
-        stderr.read.return_value.decode.return_value = ''
-        ssh.exec_command.return_value = ('', stdout, stderr)
-        actual = common.exec_command(ssh, '', 15)
-        self.assertEqual(expect, actual)
-
     @mock.patch('common.common.socket.timeout', Exception)
-    @mock.patch('common.common.g')
-    def test_exec_command_exception(self, mock_g):
+    def test_exec_command_exception(self, mock_g, mock_iter):
         """
         :param mock_set_rule:
         :return:
         """
-        ssh = mock.Mock()
-        ssh.exec_command.side_effect = Exception
-        actual = common.exec_command(ssh, 'sth', 15)
-        self.assertEqual(actual, 'Failed to execute command: sth : Timeout!')
+        mock_management_result = {
+            "japac": {
+                "bdds01(192.168.88.88)": {
+                    "123": {
+                        "status": False
+                    }
+                }
+            }
+        }
+        ssh = mock.MagicMock()
+        cmd = "ping 192.168.88.88"
+        config_name = "japac"
+        server = "bdds01(192.168.88.88)"
+        client_id = "123"
+        tool = "ping"
+        _, stdout, stderr = mock.MagicMock(), mock.MagicMock(), mock.MagicMock()
+        ssh.exec_command.side_effect = Exception("ex")
+        mock_iter.side_effect = Exception("ex")
+        common.exec_command(ssh, cmd, config_name, server, client_id, tool)
+
+    @mock.patch('common.common.management_result')
+    def test_update_status_global_stream_result(self, mock_management_result):
+        """
+        :param mock_set_rule:
+        :return:
+        """
+        mock_management_result = {
+            "japac": {
+                "bdds01(192.168.88.88)": {
+                    "123": {
+                        "status": False
+                    }
+                }
+            }
+        }
+        config_name = "japac"
+        server = "bdds01(192.168.88.88)"
+        client_id = "123"
+        common.update_status_global_stream_result(config_name, server, client_id, status=False)
+
+    @mock.patch('common.common.management_result')
+    def test_update_result_global_stream_result_global_none(self, mock_management_result):
+        """
+        :param mock_set_rule:
+        :return:
+        """
+        mock_management_result = {}
+        config_name = "japac"
+        server = "bdds01(192.168.88.88)"
+        client_id = "123"
+        tool = "ping"
+        stream_result = "tesssssss"
+        status = True
+        common.update_result_global_stream_result(config_name, server, client_id, tool, stream_result, status)
 
     @mock.patch('common.common.os')
     @mock.patch('common.common.RSAKey')
@@ -192,16 +233,47 @@ class TestCommon(unittest.TestCase):
         ssh = mock.Mock()
         mock_sshclient.return_value = ssh
         mock_ssh_open_connection.return_value = False
-        actual = common.prepare_ssh_command('host', 'tool', 'param')
-        self.assertEqual(actual, 'Failed to connect to server!')
-        mock_exec.assert_not_called()
+        config_name = "japac"
+        server = "bdds01"
+        hostname = "192.168.88.88"
+        client_id = "123"
+        tool = "ping"
+        param = "192.168.88.54"
+        with self.assertRaises(Exception):
+            common.prepare_ssh_command(config_name, server, hostname, client_id, tool, param)
+            mock_exec.assert_not_called()
 
+    @mock.patch('common.common.g')
+    @mock.patch('common.common.SSHException', Exception)
+    @mock.patch('common.common.os')
+    @mock.patch('common.common.RSAKey')
+    @mock.patch('common.common.exec_command')
+    def test_prepare_ssh_command_ssh_exception(self, mock_exec, mock_rsa, mock_os, mock_g):
+        current_path = None
+        mock_os.path.dirname.return_value = current_path
+        key_path = '/id_rsa'
+        mock_os.path.join.return_value = key_path
+        mock_rsa.from_private_key_file.side_effect = Exception("ex")
+        config_name = "japac"
+        server = "bdds01"
+        hostname = "192.168.88.88"
+        client_id = "123"
+        tool = "ping"
+        param = "192.168.88.54"
+        with self.assertRaises(Exception):
+            common.prepare_ssh_command(config_name, server, hostname, client_id, tool, param)
+            mock_exec.assert_not_called()
+            mock_g.user.logger.error.asert_called_once()
+
+    @mock.patch('common.common.Thread')
+    @mock.patch('common.common.update_result_global_stream_result')
     @mock.patch('common.common.os')
     @mock.patch('common.common.RSAKey')
     @mock.patch('common.common.exec_command')
     @mock.patch('common.common.SSHClient')
     @mock.patch('common.common.ssh_open_connection')
-    def test_prepare_ssh_command_success(self, mock_ssh_open_connection, mock_sshclient, mock_exec, mock_rsa, mock_os):
+    def test_prepare_ssh_command(self, mock_ssh_open_connection, mock_sshclient, mock_exec, mock_rsa, mock_os,
+                                 mock_update_result_global_stream_result, mock_thread):
         current_path = '/'
         mock_os.path.dirname.return_value = current_path
         key_path = '/id_rsa'
@@ -211,26 +283,16 @@ class TestCommon(unittest.TestCase):
         ssh = mock.Mock()
         mock_sshclient.return_value = ssh
         mock_ssh_open_connection.return_value = True
-        mock_exec.return_value = 'output'
-
-        tool = 'ping'
-        actual = common.prepare_ssh_command('host', tool, 'param')
-        self.assertEqual(actual, 'output')
-        mock_exec.assert_called_once()
-        mock_exec.assert_called_once_with(ssh, 'ping -c 4 param', timeout=30)
-
-    @mock.patch('common.common.SSHException', Exception)
-    @mock.patch('common.common.os')
-    @mock.patch('common.common.RSAKey')
-    @mock.patch('common.common.g')
-    def test_prepare_ssh_command_exception(self, mock_g, mock_rsa, mock_os):
-        current_path = '/'
-        mock_os.path.dirname.return_value = current_path
-        key_path = '/id_rsa'
-        mock_os.path.join.return_value = key_path
-        mock_rsa.from_private_key_file.side_effect = Exception()
-        actual = common.prepare_ssh_command('host', 'tool', 'param')
-        self.assertEqual(actual, 'Failed to connect to server!')
+        config_name = "japac"
+        server = "bdds01"
+        hostname = "192.168.88.88"
+        client_id = "123"
+        tool = "ping"
+        param = "192.168.88.54"
+        t = mock.MagicMock()
+        mock_thread.return_value = t
+        common.prepare_ssh_command(config_name, server, hostname, client_id, tool, param)
+        mock_exec.assert_not_called()
 
     @mock.patch('common.common.get_server_ip')
     @mock.patch('common.common.g')

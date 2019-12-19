@@ -1,4 +1,3 @@
-
 # Copyright 2019 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,12 +99,100 @@ class TestTroubleShootingUIPage(unittest.TestCase):
     @mock.patch('trouble_shooting_ui_page.common')
     def test_submit(self, mock_common, mock_jsonify, mock_request):
         mock_request.method = 'POST'
-        data = {'server': 'abc(123)', 'tool': 'dig', 'parameters': '1.2.3.4'}
+        data = {"client-id": "123", 'server': 'abc(123)', 'tool': 'dig', 'param': '1.2.3.4', "config-name": "japac"}
         mock_request.get_json.return_value = data
-        expect = mock.Mock()
+        expect = {'result': "Connecting..."}
         mock_common.prepare_ssh_command.return_value = expect
         mock_jsonify.return_value = expect
         from trouble_shooting_ui_page import submit
         actual = submit()
         self.assertEqual(actual, expect)
-        mock_common.prepare_ssh_command.assert_called_once_with('123', 'dig', '1.2.3.4')
+        mock_common.prepare_ssh_command.assert_called_once()
+
+    @mock.patch('trouble_shooting_ui_page.g')
+    @mock.patch('trouble_shooting_ui_page.request')
+    @mock.patch('trouble_shooting_ui_page.jsonify')
+    @mock.patch('trouble_shooting_ui_page.common')
+    def test_submit_exception(self, mock_common, mock_jsonify, mock_request, mock_g):
+        mock_request.method = 'POST'
+        data = {"client-iddddd": "123", 'server': 'abc(123)', 'tool': 'dig', 'param': '1.2.3.4', "config-name": "japac"}
+        mock_request.get_json.return_value = data
+        expect = {}, 500
+        mock_common.prepare_ssh_command.return_value = expect
+        mock_jsonify.return_value = {}
+        from trouble_shooting_ui_page import submit
+        actual = submit()
+        self.assertEqual(actual, expect)
+        mock_g.user.logger.error.assert_called_once()
+
+    @mock.patch('trouble_shooting_ui_page.request')
+    @mock.patch('trouble_shooting_ui_page.jsonify')
+    @mock.patch('trouble_shooting_ui_page.common')
+    def test_stream_result_get(self, mock_common, mock_jsonify, mock_request):
+        mock_request.method = 'GET'
+        config_name = "test"
+        mock_request.args.get.return_value = config_name
+        mock_common.management_result = {
+            "test": {
+                "test": {
+                    "test": {
+                        "test": "test",
+                        "status": False
+                    }
+                }
+            }
+        }
+
+        result = {"test": "test", "status": False}
+        mock_jsonify.return_value = result
+        from trouble_shooting_ui_page import stream_result
+        actual = stream_result()
+        self.assertEqual(actual, result)
+
+    @mock.patch('trouble_shooting_ui_page.request')
+    @mock.patch('trouble_shooting_ui_page.jsonify')
+    @mock.patch('trouble_shooting_ui_page.common')
+    def test_stream_result_delete(self, mock_common, mock_jsonify, mock_request):
+        mock_request.method = 'DELETE'
+        mock_request.args.get.return_value = "test"
+        mock_common.management_result = {
+            "test": {
+                "test": {
+                    "test": {
+                        "test": "test",
+                        "status": False
+                    }
+                }
+            }
+        }
+
+        result = {"status": "Sucesss"}
+        mock_jsonify.return_value = result
+        from trouble_shooting_ui_page import stream_result
+        actual = stream_result()
+        self.assertEqual(actual, result)
+
+    @mock.patch('trouble_shooting_ui_page.g')
+    @mock.patch('trouble_shooting_ui_page.request')
+    @mock.patch('trouble_shooting_ui_page.jsonify')
+    @mock.patch('trouble_shooting_ui_page.common')
+    def test_stream_result_exception(self, mock_common, mock_jsonify, mock_request, mock_g):
+        mock_request.method = 'GET'
+        config_name = None
+        mock_request.args.get.return_value = config_name
+        mock_common.management_result = {
+            "test": {
+                "test": {
+                    "test": {
+                        "test": "test",
+                        "status": False
+                    }
+                }
+            }
+        }
+
+        result = {"test": "test", "status": False}
+        mock_jsonify.return_value = result
+        from trouble_shooting_ui_page import stream_result
+        actual = stream_result()
+        self.assertEqual(actual, result)
