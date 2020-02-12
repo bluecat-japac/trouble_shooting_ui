@@ -166,6 +166,13 @@ def prepare_ssh_command(config_name, server, hostname, client_id, tool, param, u
         "dig": "dig {}",
         "traceroute": "traceroute {}"
     }
+
+    if ":" in param:
+        tool_cmd = {
+            "ping": "ping6 -c 10 {}",
+            "dig": "dig {}",
+            "traceroute": "traceroute6 {}"
+        }
     cmd = tool_cmd.get(tool).format(param)
     update_result_global_stream_result(
         config_name, server, client_id, tool, stream_result, "False")

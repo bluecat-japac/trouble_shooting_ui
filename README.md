@@ -18,7 +18,7 @@ Open firewall for ping, traceroute and add permission for traceroute
 2. Run this command to add permission for traceroute
 
     ```
-    echo "bluecat ALL = (root) NOPASSWD: /usr/bin/traceroute" > /etc/sudoers.d/bluecat-traceroute
+   chmod 755 /usr/bin/traceroute.db
     ```
 
 ## Setup Gateway workflow and install 3rd Python libraries
