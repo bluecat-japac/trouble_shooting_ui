@@ -17,7 +17,7 @@
 
 $(document).ready(function () {
     window.submitted = false;
-    $('#txt-parameters').attr("placeholder", "<IPv4 address>|<IPv6 address> -I <interface>");
+    $('#txt-parameters').attr("placeholder", "<IP address> [<option>]");
     $('#submit').prop('disabled', true);
     $('#sl-config').prop('disabled', true);
     $('#sl-server').prop('disabled', true);
@@ -28,8 +28,8 @@ $(document).ready(function () {
 
 var placeholderText = {
     "dig": "@<server IP address> <name query>",
-    "ping": "<specify IP address>",
-    "traceroute": "<specify IP address>"
+    "ping": "<IP address> [<option>]",
+    "traceroute": "<IP address>"
 };
 
 function checkInput(){
@@ -160,30 +160,11 @@ $("#submit").click(function (e) {
     var server_name = s_name.replace(/\W/g, '_')
     window.clientID = server_name.concat('_', date)
 
-    var ipv4_pattern = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])'
-    var ipv6_pattern = '(((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7})'
-    var ping4_re = new RegExp("^" + ipv4_pattern + "$")
-    var ping6_re = new RegExp("(^(" + ipv6_pattern + " -I \\w+)$)|(^(-I \\w+ " + ipv6_pattern + ")$)")
-    var dig4_re = new RegExp("^@" + ipv4_pattern + "+ (([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")
-    var dig6_re = new RegExp("^@" + ipv6_pattern + "+ (([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$")
-    var traceroute4_re = new RegExp("^" + ipv4_pattern + "$")
-    var traceroute6_re = new RegExp("^" + ipv6_pattern + "$")
+    var regex = new RegExp("^([^$;`>|/]+)$")
 
-    if (tool == "ping"){
-        if (parameters == "" || (ping4_re.test(parameters) == false && ping6_re.test(parameters) == false)) {
-            $('#lb-require').html("Invalid value. It must be a valid IPv4 address or an IPv6 address with -I option.")
-            document.getElementById("txt-parameters").style.borderColor = "#cc0033"
-        }
-    } else if (tool == "dig"){
-        if (parameters == "" || (dig4_re.test(parameters) == false && dig6_re.test(parameters) == false)) {
-            $('#lb-require').html("You entered wrong dig format. Please check it again!")
-            document.getElementById("txt-parameters").style.borderColor = "#cc0033"
-        }
-    } else {
-        if (parameters == "" || (traceroute4_re.test(parameters) == false && traceroute6_re.test(parameters) == false)) {
-            $('#lb-require').html("Invalid value. It must be a valid IP address.")
-            document.getElementById("txt-parameters").style.borderColor = "#cc0033"
-        }
+    if (parameters == "" || regex.test(parameters) == false) {
+        $('#lb-require').html("Invalid value. Input contains escape characters!")
+        document.getElementById("txt-parameters").style.borderColor = "#cc0033"
     }
 
     var j_data = {
