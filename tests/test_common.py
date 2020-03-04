@@ -263,7 +263,7 @@ class TestCommon(unittest.TestCase):
         with self.assertRaises(Exception):
             common.prepare_ssh_command(config_name, server, hostname, client_id, tool, param)
             mock_exec.assert_not_called()
-            mock_g.user.logger.error.asert_called_once()
+            mock_g.user.logger.error.assert_called_once()
 
     @mock.patch('common.common.Thread')
     @mock.patch('common.common.update_result_global_stream_result')
