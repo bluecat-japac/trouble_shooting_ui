@@ -1,4 +1,4 @@
-# Copyright 2019 BlueCat Networks (USA) Inc. and its affiliates
+# Copyright 2021 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import re
 import os
 import socket
 import traceback
@@ -28,26 +28,21 @@ stream_result = ""
 management_result = {}
 
 
-def get_bam_ip():
+def get_bam_name():
     """
-    :return:
+    :return: Alias BAM
     """
-    if 'BAM_IP' in os.environ:
-        if 'http' in os.environ['BAM_IP']:
-            bam_ip = os.environ['BAM_IP'].split('/')[2]
-        else:
-            bam_ip = os.environ['BAM_IP'].split('/')[0]
-        return bam_ip
-
+    bam_ip = g.user.get_api_netloc()
     if hasattr(user_config, 'api_url'):
         if isinstance(user_config.api_url, str):
-            bam_ip = user_config.api_url.split('/')[2]
+            return user_config.api_url.split('/')[2]
         else:
-            bam_ip = user_config.api_url[0][0]
-        return bam_ip
+            for bam in user_config.api_url:
+                if bam_ip == re.search('//(.+?)/', bam[1]).group(1):
+                    return bam[0]
 
     raise PortalException(
-        'No BAM configured in Config.py or Environment variable BAM_IP')
+        'No BAM configured in config.py')
 
 
 def get_server_ip(server):
@@ -75,11 +70,10 @@ def get_server_list(configuration_id):
 def ssh_open_connection(ssh, hostname, username, key, timeout, **kwargs):
     """
     :param ssh:
+    :param key:
     :param hostname:
     :param username:
-    :param password:
     :param timeout:
-    :param kwargs:
     :return:
     """
     g.user.logger.info(
@@ -110,7 +104,10 @@ def exec_command(ssh, cmd, config_name, server, client_id, tool):
     """
     :param ssh:
     :param cmd:
-    :param timeout:
+    :param config_name:
+    :param server:
+    :param client_id:
+    :param tool:
     :return:
     """
     try:
@@ -142,7 +139,6 @@ def prepare_ssh_command(config_name, server, hostname, client_id, tool, param, u
     :param param:
     :param username:
     :param timeout:
-    :param kwargs:
     :return:
     """
     global management_result

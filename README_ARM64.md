@@ -23,7 +23,7 @@ Open firewall for ping, traceroute and add permission for traceroute
 
 ## Setup Gateway workflow and install 3rd Python libraries
 
-1. Use the **Gateway Management** to import workflow function(version 19.8.1)
+1. Use the **Gateway Management** to import workflow function(version 20.6.1)
 
     ![Import](images/import.png?raw=true)
     
@@ -32,7 +32,7 @@ Open firewall for ping, traceroute and add permission for traceroute
 2. Execute this command to install 3rd Python libraries with correct path of gateway and trouble_shooting_ui workflow directories:
 
     ```bash
-    docker exec bluecat_gateway pip install --target /bluecat_gateway/customizations/integrations -r /bluecat_gateway/workflows/trouble_shooting_ui/requirements.txt
+    docker exec bluecat_gateway pip install -r /bluecat_gateway/workflows/trouble_shooting_ui/requirements.txt
     docker restart bluecat_gateway
     ```
 

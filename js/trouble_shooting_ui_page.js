@@ -22,6 +22,7 @@ $(document).ready(function () {
     $('#sl-config').prop('disabled', true);
     $('#sl-server').prop('disabled', true);
     $('#txt-parameters').val('');
+    $('#sl-tool').val('ping');
     $('#result').val('');
     onLoad();
 })
