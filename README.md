@@ -23,7 +23,7 @@ Open firewall for ping, traceroute and add permission for traceroute
 
 ## Setup Gateway workflow and install 3rd Python libraries
 
-1. Use the **Gateway Management** to import workflow function(version 19.8.1)
+1. Use the **Gateway Management** to import workflow function(version 20.6.1)
 
     ![Import](images/import.png?raw=true)
     
