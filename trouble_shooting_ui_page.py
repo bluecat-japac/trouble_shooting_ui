@@ -1,5 +1,5 @@
 
-# Copyright 2019 BlueCat Networks (USA) Inc. and its affiliates
+# Copyright 2021 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,11 +51,11 @@ def trouble_shooting_ui_trouble_shooting_ui_page():
 @util.workflow_permission_required('trouble_shooting_ui_page')
 @util.exception_catcher
 def onload():
-    bam_ip = common.get_bam_ip()
+    bam_name = common.get_bam_name()
     configurations = util.get_configurations()
     configuration_id = configurations[0][0]
     servers = common.get_server_list(configuration_id)
-    return jsonify({'bam': bam_ip, 'configurations': configurations, 'server': servers})
+    return jsonify({'bam': bam_name, 'configurations': configurations, 'server': servers})
 
 
 @route(app, '/trouble_shooting_ui/server', methods=['POST'])
