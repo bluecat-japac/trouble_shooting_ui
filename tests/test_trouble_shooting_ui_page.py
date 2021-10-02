@@ -77,7 +77,6 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         self.assertEqual(actual, expect)
         mock_common.get_bam_ip.assert_called_once()
         mock_util.get_configurations.assert_called_once()
-        mock_common.get_server_list.assert_called_once_with(123456)
 
     @mock.patch('trouble_shooting_ui_page.request')
     @mock.patch('trouble_shooting_ui_page.jsonify')
@@ -92,7 +91,6 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         from trouble_shooting_ui_page import update_server_list
         actual = update_server_list()
         self.assertEqual(actual, expect)
-        mock_common.get_server_list.assert_called_once_with(1235)
 
     @mock.patch('trouble_shooting_ui_page.request')
     @mock.patch('trouble_shooting_ui_page.jsonify')
