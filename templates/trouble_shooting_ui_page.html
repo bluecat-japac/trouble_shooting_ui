@@ -66,8 +66,18 @@
             <span>Configuration</span>
         </div>
         <div class="col-md-4 text-right" >
-            <select id="sl-configuration" onchange="updateServerList()">
-                <!-- configuration id show here -->
+            <select id="sl-configuration" onchange="updateViewAndServerList()">
+                <!-- configuration name show here -->
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 text">
+            <span>View</span>
+        </div>
+        <div class="col-md-4">
+            <select id="sl-view">
+                <!-- views name show here -->
             </select>
         </div>
     </div>
@@ -77,7 +87,7 @@
         </div>
         <div class="col-md-4">
             <select id="sl-server">
-                <!-- server name/id show here -->
+                <!-- servers name show here -->
             </select>
         </div>
     </div>
@@ -122,6 +132,8 @@
 
 {% block scripts %}
 <script src="js/trouble_shooting_ui_page.js?version={{ g.version | urlencode }}"></script>
+<script src="js/common.js?version={{ g.version | urlencode }}"></script>
+
 <script>
     var server_str = '{{ server_str }}'
     var configuration_name = '{{ configuration_name }}'

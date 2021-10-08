@@ -16,13 +16,15 @@ import re
 import os
 import socket
 import traceback
+import bluecat_portal.config as user_config
+
 from threading import Thread
 from flask import g
-from bluecat import entity
 from paramiko import SSHClient, AutoAddPolicy, RSAKey
 from paramiko.ssh_exception import AuthenticationException, SSHException
-import bluecat_portal.config as user_config
 from bluecat.api_exception import PortalException
+
+from ..common.constants import NAMED_PATH
 
 stream_result = ""
 management_result = {}
@@ -43,28 +45,6 @@ def get_bam_name():
 
     raise PortalException(
         'No BAM configured in config.py')
-
-
-def get_server_ip(server):
-    """
-    :param server:
-    :return:
-    """
-    props = server['properties'].split('|')
-    for prop in props:
-        if prop.startswith('defaultInterfaceAddress'):
-            ip = prop.split('=')[1]
-            return ip
-
-
-def get_server_list(configuration_id):
-    servers = g.user.get_api()._api_client.service.getEntities(
-        configuration_id, entity.Entity.Server, 0, 1000)
-    server_list = []
-    for server in servers:
-        ip = get_server_ip(server)
-        server_list.append([server['name'], ip])
-    return server_list
 
 
 def ssh_open_connection(ssh, hostname, username, key, timeout, **kwargs):
@@ -128,7 +108,7 @@ def exec_command(ssh, cmd, config_name, server, client_id, tool):
         g.user.logger.error(traceback.format_exc())
 
 
-def prepare_ssh_command(config_name, server, hostname, client_id, tool, param, username='bluecat', timeout=30,
+def prepare_ssh_command(config_name, server, hostname, client_id, tool, param, view_id=0, username='bluecat', timeout=30,
                         **kwargs):
     """
     :param config_name:
@@ -157,16 +137,21 @@ def prepare_ssh_command(config_name, server, hostname, client_id, tool, param, u
         ssh, hostname, username, key, timeout, **kwargs)
     if not is_connected:
         raise Exception('Failed to connect to server!')
+    dig_cmd = "dig {}"
+    if view_id != 0:
+        loop_back_ip = get_loop_back_ip(ssh, view_id)
+        if loop_back_ip:
+            dig_cmd += ' -b {}'.format(loop_back_ip)
     tool_cmd = {
         "ping": "ping -c 10 {}",
-        "dig": "dig {}",
+        "dig": dig_cmd,
         "traceroute": "traceroute {}"
     }
 
     if ":" in param:
         tool_cmd = {
             "ping": "ping6 -c 10 {}",
-            "dig": "dig {}",
+            "dig": dig_cmd,
             "traceroute": "traceroute6 {}"
         }
     cmd = tool_cmd.get(tool).format(param)
@@ -263,19 +248,37 @@ def get_bam_data(data):
     :return:
     """
     server_str = ''
-    configuration_name = ''
-    configuration_id = ''
     try:
         server_id = data.get("oid", "")
-        server = g.user.get_api()._api_client.service.getEntityById(server_id)
-        server_name = server.get("name", "")
-        server_ip = get_server_ip(server)
+        server = g.user.get_api().get_entity_by_id(server_id)
+        server_name = server.get_name()
+        server_ip = server.get_property('defaultInterfaceAddress')
         server_str = server_name + "(" + server_ip + ")"
-        configuration = g.user.get_api()._api_client.service.getParent(server_id)
-        configuration_name = configuration.get("name", "")
-        configuration_id = configuration.get("id", "")
+        configuration = server.get_configuration()
     except Exception as ex:
         g.user.logger.error('Error when get data from BAM: {}'.format(ex))
         g.user.logger.error(traceback.format_exc())
     finally:
-        return server_str, configuration_name, configuration_id
+        return server_str, configuration.get_name(), configuration.get_id()
+
+
+def get_loop_back_ip(ssh, view_id):
+    """
+    Search and get loop back IP by View
+    :param ssh:
+    :param view_id: id of view
+    :return:
+    """
+    try:
+        loop_back_ip = None
+        _, stdout, _ = ssh.exec_command("sudo cat {} | awk '/match-clients.* key VIEW{};/'".format(NAMED_PATH, view_id))
+        match_client_line = str(stdout.read().decode())
+        g.user.logger.info('Get loop back IP from: {}'.format(match_client_line))
+        list_out = [x.strip() for x in re.findall('(127.0.0.*?);', match_client_line)]
+        if list_out:
+            loop_back_ip = list_out[0]
+        return loop_back_ip
+    except socket.timeout:
+        output = 'Failed to execute command get IP look back of view: {} : Timeout!'.format(view_id)
+        g.user.logger.error(output)
+        g.user.logger.error(traceback.format_exc())

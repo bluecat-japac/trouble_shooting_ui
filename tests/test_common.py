@@ -1,4 +1,4 @@
-|# Copyright 2021 BlueCat Networks (USA) Inc. and its affiliates
+# Copyright 2021 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,17 +60,6 @@ class TestCommon(unittest.TestCase):
         mock_hasattr.return_value = False
         with self.assertRaises(Exception):
             common.get_bam_ip()
-
-    @mock.patch('common.common.g')
-    def test_get_server_list(self, mock_g):
-        server = [{'name': 'bdds1', 'properties': 'defaultInterfaceAddress=1.2.3.4|otherProperties=...'}]
-        config_id = mock.Mock()
-        mock_g.user.get_api.return_value._api_client.service.getEntities.return_value = server
-
-        expect = [['bdds1', '1.2.3.4']]
-        actual = common.get_server_list(config_id)
-        self.assertEqual(actual, expect)
-        mock_g.user.get_api.return_value._api_client.service.getEntities.assert_called_once()
 
     @mock.patch('common.common.g')
     def test_ssh_open_connection_without_exception(self, mock_g):
@@ -263,7 +252,7 @@ class TestCommon(unittest.TestCase):
         with self.assertRaises(Exception):
             common.prepare_ssh_command(config_name, server, hostname, client_id, tool, param)
             mock_exec.assert_not_called()
-            mock_g.user.logger.error.assert_called_once()
+            mock_g.user.logger.error.asert_called_once()
 
     @mock.patch('common.common.Thread')
     @mock.patch('common.common.update_result_global_stream_result')

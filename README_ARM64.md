@@ -1,12 +1,17 @@
 # Trouble Shooting UI
 
-Trouble-shooting commands UI for perform DNS and network connectivity tests from the DNS server
+Trouble-shooting commands UI for perform DNS and network connectivity tests from the DNS Server
 
-## Set up BDDS
+## Requirements
+
+- BlueCat Gateway Version: 20.6.1 or later
+- BAM/BDDS Version: 9.1 or later
+
+## Setup BDDS
 
 Open firewall for ping, traceroute and add permission for traceroute
 
-1. Run this command to open ICMP
+1. Run this command to open `ICMP`
 
     ```
     echo "iptables -A icmp_packets -p ICMP --icmp-type echo-request -j ACCEPT
@@ -15,32 +20,17 @@ Open firewall for ping, traceroute and add permission for traceroute
     " > fw
     custom_fw_rules --import-rules fw
     ```
-2. Run this command to add permission for traceroute
+2. Run this command to add permission <br>
+   For `traceroute`
 
     ```
-   chmod 755 /usr/bin/traceroute.db
+    chmod 755 /usr/bin/traceroute.db
     ```
-
-## Setup Gateway workflow and install 3rd Python libraries
-
-1. Use the **Gateway Management** to import workflow function(version 20.6.1)
-
-    ![Import](images/import.png?raw=true)
-    
-    Note: If any error occurs, just ignore because it is acceptable.
-    
-2. Execute this command to install 3rd Python libraries with correct path of gateway and trouble_shooting_ui workflow directories:
-
-    ```bash
-    docker exec bluecat_gateway pip install -r /bluecat_gateway/workflows/trouble_shooting_ui/requirements.txt
-    docker restart bluecat_gateway
+    For `ping`
     ```
-
-3. Navigate to **Workflow Permission**. Add permission to access trouble shooting ui workflow.
-
-    ![Permission](images/permission.png?raw=true)
-
-## Set up BAM
+   chmod u+s /bin/ping
+   ```
+## Setup BAM
 
 #### Check User
 
@@ -95,7 +85,7 @@ Open firewall for ping, traceroute and add permission for traceroute
 
     ![Add Access Rights Settings](images/add_access_right.png?raw=true "Optional Title")
 
-### Create User Define Field(UDF) for Server object
+### Create User Define Field (UDF) for Server object
 
 1. Access to BAM then select **Administration** tab
 
@@ -116,7 +106,8 @@ Open firewall for ping, traceroute and add permission for traceroute
     | Field | Default |
     | --- | --- |
     | `Name`  | udf-server-troubleshoot-wf |
-    | `Display Name` | Troubleshooting |
+    | `Display Name` | Trouble Shooting |
+    | `Type` | Workflow |
     | `Default Value` | Troubleshooting |
     | `Label` | Troubleshooting |
     | `URL` | **http://`<gateway-ip>`:`<port>`/trouble_shooting_ui/trouble_shooting_ui_endpoint** |
@@ -127,15 +118,84 @@ Open firewall for ping, traceroute and add permission for traceroute
 
 6. Click **Add** button to finish.
 
-7. After finish, go back to **Details** tab of this **Server**. The UDF will appear and click it to redirect to Trouble Shooting UI.
+7. After finish, go back to **Details** tab of this **Server**. The **Trouble Shooting** UDF will appear and click it to redirect to Trouble Shooting UI.
 
-### Workflow to run command
+## Setup Workflow
+
+## Generate SSH key with PEM format to use
+
+1. Create **ssh** folder in **path/to/trouble_shooting_ui**
+
+    ```
+    mkdir ssh
+    ```
+
+2. Run this command to generate SSH key:
+
+    ```
+    cd ssh/
+    ssh-keygen -m PEM
+    ```
+
+    * Enter file in which the key was saved: **path/to/trouble_shooting_ui/ssh** with the name of SSH key is "key"
+
+        > Example: /trouble_shooting_ui/ssh/key
+
+    * Note: No passphrase
+
+3. Copy SSH key to the Server
+
+    * Run this command:
+
+        ```
+        ssh-copy-id -i <key> <user>@<host>
+
+        Example: ssh-copy-id -i key bluecat@192.168.88.88
+        ```
+
+        > Note: currently, workflow use the **bluecat** user in server
+     
+    * Run this command to set new password for **user**:
+
+        ```
+        passwd <user>
+        ```
+
+## Setup Gateway workflow and install 3rd Python libraries
+
+1. Use the **Gateway Management** to import workflow function
+
+    ![Import](images/import.png?raw=true)
+    
+    Note: If any error occurs, just ignore because it is acceptable.
+    
+2. Execute this command to install 3rd Python libraries with correct path of gateway and trouble_shooting_ui workflow directories:
+
+    ```bash
+    docker exec bluecat_gateway pip install -r /bluecat_gateway/workflows/trouble_shooting_ui/requirements.txt
+    docker restart bluecat_gateway
+    ```
+
+3. Navigate to **Workflow Permission**. Add permission to access trouble shooting ui workflow.
+
+    ![Permission](images/permission.png?raw=true)
+
+## Setup Security in Gateway UI (Gateway version *20.12.1* or later)
+  1. Need to additional environment (apply for Gateway docker container):
+  - `SESSION_COOKIE_SECURE`=`false`
+  2. Configure **Security** in Gateway UI:
+  - Configure **Content Security Policy** to accept to load CSS by enter URLs to **Policy** input and tick **No Cache** in **Cache Control**
+
+  ![Cache Control](images/cache_control.png?raw=true)
+
+
+### Workflow UI
 
  ![ UI ](images/ui.png?raw=true)
 
 1. Default **BAM IP** get in config file
 
-2. Select one **Configuration** in BAM
+2. Select **Configuration** in BAM
 
 3. Choose **Server** in **Configuration**. It varies according to the configuration selected.
 
@@ -149,49 +209,8 @@ Open firewall for ping, traceroute and add permission for traceroute
 
 5. Input correct **Parameters**
 
-    > Note: The error message will appear when input wrong format of **Parameters**
-
 6. Click **SUBMIT** button.
 
     > Note: The **SUBMIT** button is only enable after selecting DNS/DHCP server(s), choosing trap OID and sticking at least one **SNMP version**
 
 7. The command results will appear in **Result** field.
-
-### Generate SSH key with PEM format to use
-
-1. Create **ssh** folder in **path/to/trouble_shooting_ui**
-
-    ```
-    mkdir ssh
-
-    ```
-
-1. Run this command:
-
-    ```
-    ssh-keygen -m PEM
-    ```
-
-    * Enter file in which the key was saved: **path/to/trouble_shooting_ui/ssh** with the name of SSH key is "key"
-
-        > Example: /trouble_shooting_ui/ssh/key
-
-    * Note: No passphrase
-
-2. Copy SSH key to the server
-
-    * Run this command:
-
-        ```
-        ssh-copy-id -i <key> <user>@<host>
-
-        Example: ssh-copy-id -i key admin@192.168.88.88
-        ```
-
-        > Note: currently, workflow use the **bluecat** user in server
-     
-    * If not set password for **bluecat** user, SSH to the Server then run this command and set new password:
-
-        ```
-        passwd bluecat
-        ```
