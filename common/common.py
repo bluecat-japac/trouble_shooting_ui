@@ -39,9 +39,15 @@ def get_bam_name():
         if isinstance(user_config.api_url, str):
             return user_config.api_url.split('/')[2]
         else:
-            for bam in user_config.api_url:
-                if bam_ip == re.search('//(.+?)/', bam[1]).group(1):
-                    return bam[0]
+            try:
+                for bam in user_config.api_url:
+                    if '/Services' in bam[1] and bam_ip == re.search('//(.+?)/', bam[1]).group(1):
+                        return bam[0]
+                    elif bam_ip == bam[1].split('//')[1]:
+                        return bam[0]
+            except Exception as ex:
+                g.user.logger.error("Exception get bam name: {}".format(str(ex)))
+                g.user.logger.error(traceback.format_exc())
 
     raise PortalException(
         'No BAM configured in config.py')

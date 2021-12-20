@@ -146,6 +146,8 @@ $("#submit").click(function (e) {
     if (parameters == "" || regex.test(parameters) == false) {
         $('#lb-require').html("Invalid value. Input contains escape characters!")
         document.getElementById("txt-parameters").style.borderColor = "#cc0033"
+    } else {
+        document.getElementById("txt-parameters").style.borderColor = "#0073ae"
     }
 
     var j_data = {
