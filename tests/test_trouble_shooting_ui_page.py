@@ -16,10 +16,11 @@
 import unittest
 import context
 from unittest import mock  # pylint:disable=import-error
+from trouble_shooting_ui import trouble_shooting_ui_page
 
 
 class TestTroubleShootingUIPage(unittest.TestCase):
-    @mock.patch('trouble_shooting_ui_page.os')
+    @mock.patch('trouble_shooting_ui.trouble_shooting_ui_page.os')
     def test_module_path(self, mock_os):
         """
         :param mock_os:
@@ -27,8 +28,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         """
         path = mock.Mock()
         mock_os.path.dirname.return_value = path
-        from trouble_shooting_ui_page import module_path
-        actual = module_path()
+        actual = trouble_shooting_ui_page.module_path()
         expect = path
         self.assertEqual(expect, actual)
         mock_os.path.dirname.assert_called_once()
@@ -40,8 +40,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         mock_request.method = 'GET'
         expect = mock.Mock()
         mock_render_template.return_value = expect
-        from trouble_shooting_ui_page import trouble_shooting_ui_trouble_shooting_ui_page
-        actual = trouble_shooting_ui_trouble_shooting_ui_page()
+        actual = trouble_shooting_ui_page.trouble_shooting_ui_trouble_shooting_ui_page()
         self.assertEqual(actual, expect)
         mock_common.get_bam_data.assert_not_called()
 
@@ -55,8 +54,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         mock_common.get_bam_data.return_value = '', '', ''
         expect = mock.Mock()
         mock_render_template.return_value = expect
-        from trouble_shooting_ui_page import trouble_shooting_ui_trouble_shooting_ui_page
-        actual = trouble_shooting_ui_trouble_shooting_ui_page()
+        actual = trouble_shooting_ui_page.trouble_shooting_ui_trouble_shooting_ui_page()
         self.assertEqual(actual, expect)
         mock_common.get_bam_data.assert_called_once_with(data)
 
@@ -72,8 +70,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         servers = [654321]
         expect = {'bam': bam_ip, 'configurations': configurations, 'servers': servers}
         mock_jsonify.return_value = expect
-        from trouble_shooting_ui_page import onload
-        actual = onload()
+        actual = trouble_shooting_ui_page.onload()
         self.assertEqual(actual, expect)
         mock_common.get_bam_ip.assert_called_once()
         mock_util.get_configurations.assert_called_once()
@@ -88,8 +85,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         servers = [654321]
         expect = {'servers': servers}
         mock_jsonify.return_value = expect
-        from trouble_shooting_ui_page import update_server_list
-        actual = update_server_list()
+        actual = trouble_shooting_ui_page.update_server_list()
         self.assertEqual(actual, expect)
 
     @mock.patch('trouble_shooting_ui_page.request')
@@ -102,8 +98,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         expect = {'result': "Connecting..."}
         mock_common.prepare_ssh_command.return_value = expect
         mock_jsonify.return_value = expect
-        from trouble_shooting_ui_page import submit
-        actual = submit()
+        actual = trouble_shooting_ui_page.submit()
         self.assertEqual(actual, expect)
         mock_common.prepare_ssh_command.assert_called_once()
 
@@ -118,8 +113,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
         expect = {}, 500
         mock_common.prepare_ssh_command.return_value = expect
         mock_jsonify.return_value = {}
-        from trouble_shooting_ui_page import submit
-        actual = submit()
+        actual = trouble_shooting_ui_page.submit()
         self.assertEqual(actual, expect)
         mock_g.user.logger.error.assert_called_once()
 
@@ -143,8 +137,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
 
         result = {"test": "test", "status": False}
         mock_jsonify.return_value = result
-        from trouble_shooting_ui_page import stream_result
-        actual = stream_result()
+        actual = trouble_shooting_ui_page.stream_result()
         self.assertEqual(actual, result)
 
     @mock.patch('trouble_shooting_ui_page.request')
@@ -166,8 +159,7 @@ class TestTroubleShootingUIPage(unittest.TestCase):
 
         result = {"status": "Sucesss"}
         mock_jsonify.return_value = result
-        from trouble_shooting_ui_page import stream_result
-        actual = stream_result()
+        actual = trouble_shooting_ui_page.stream_result()
         self.assertEqual(actual, result)
 
     @mock.patch('trouble_shooting_ui_page.g')
@@ -191,6 +183,5 @@ class TestTroubleShootingUIPage(unittest.TestCase):
 
         result = {"test": "test", "status": False}
         mock_jsonify.return_value = result
-        from trouble_shooting_ui_page import stream_result
-        actual = stream_result()
+        actual = trouble_shooting_ui_page.stream_result()
         self.assertEqual(actual, result)

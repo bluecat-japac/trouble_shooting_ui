@@ -1,4 +1,3 @@
-
 # Copyright 2021 BlueCat Networks (USA) Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,3 +14,13 @@
 
 # -*- coding: utf-8 -*-
 
+
+type = 'ui'
+sub_pages = [
+    {
+        'name'        : 'trouble_shooting_ui_page',
+        'title'       : u'Trouble Shooting',
+        'endpoint'    : 'trouble_shooting_ui/trouble_shooting_ui_endpoint',
+        'description' : u'trouble_shooting_ui'
+    },
+]

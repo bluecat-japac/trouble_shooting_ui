@@ -1,0 +1,245 @@
+/* Copyright 2021 BlueCat Networks. All rights reserved. */
+body {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+}
+
+.fas span,
+.fa span,
+.far span {
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+#statusMsg {
+    margin-top: -10px;
+    margin-bottom: 20px;
+    width: 700px;
+}
+
+i.fa-question-circle {
+    margin-left: 5px;
+    color: #36d2d3;
+}
+
+#bkDataTable th,
+#bkStatusTable th {
+    font-weight: bold;
+    color: #fff;
+}
+
+#bkDataTable tr:first-child th:first-child,
+#bkStatusTable tr:first-child th:first-child {
+    border-top-left-radius: 4px;
+}
+
+#bkDataTable tr:first-child th:last-child,
+#bkStatusTable tr:first-child th:last-child {
+    border-top-right-radius: 4px;
+}
+
+#bkDataTable tr:last-child td:first-child,
+#bkStatusTable tr:last-child td:first-child {
+    border-bottom-left-radius: 4px;
+}
+
+#bkDataTable tr:last-child td:last-child,
+#bkStatusTable tr:last-child td:last-child {
+    border-bottom-right-radius: 4px;
+}
+
+#bkDataTable,
+#bkStatusTable {
+    width: 85%;
+    table-layout: fixed;
+    overflow-wrap: break-word;
+    border-radius: 3px;
+    border-style: hidden;
+    box-shadow: 0 0 0 1px #0073ae
+}
+
+#bkDataTable td,
+#bkStatusTable th,
+#bkDataTable th,
+#bkStatusTable td {
+    border: 1px solid #0073ae;
+}
+
+#bkDataTable tr>td,
+#bkStatusTable tr>td,
+#bkDataTable tr>th,
+#bkStatusTable tr>th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+#bkDataTable tr>td:nth-child(1) {
+    vertical-align: auto !important;
+    text-align: left !important;
+}
+
+#main-container {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#bkData {
+    padding-left: 5px;
+    width: 100%;
+}
+
+#bkDataDropdown {
+    margin-top: 20px;
+}
+#bkData,
+#bkStatus {
+    font-size: 14px;
+}
+
+#footerButton input[type=button] {
+    margin-left: 10px;
+    margin-top: -5px;
+    float: left;
+    width: 90px;
+    height: 40px;
+    display: block;
+}
+
+hr {
+    padding: 0 0 0 0;
+    width: 85%;
+}
+
+.div-start-section {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.show-more span {
+    margin-left: 15px;
+    font-weight: normal;
+}
+
+.show-more:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.show-more {
+    color: #fff;
+}
+
+.show-more span {
+    font-size: 17px;
+    margin-left: 7px;
+    font-weight: normal;
+}
+
+.inform {
+    font-size: 16px;
+    color: #0093b8;
+}
+
+
+
+.form-control {
+    margin-bottom: 10px;
+}
+
+.btn-delete-selected {
+    width: 140px!important;
+    margin-left: 550px!important;
+    height: 40px!important;
+    padding-bottom: 10px!important;
+    padding-top: 8px!important;
+    padding-left: 10px!important;
+    background-color: #0073ae!important;
+    color:black!important;
+}
+
+.btn-delete-selected:hover {
+    color:white!important;
+}
+
+.fa-download:hover {
+    color:white!important;
+}
+
+.fa-trash-alt:hover {
+    color:white!important;
+}
+
+
+/* Start of ovelay */
+
+.dialog-ovelay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.50);
+    z-index: 999999
+}
+
+.dialog-ovelay .dialog {
+    width: 450px;
+    margin: 100px auto 0;
+    margin-top: 250px;
+    background-color: #182a43;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+    border-radius: 3px;
+    overflow: hidden;
+    color: white;
+}
+
+.dialog-ovelay .dialog header {
+    padding: 10px 8px;
+    background-color: #0073ae;
+    color: white;
+    border-bottom: 1px solid #eee
+}
+
+.dialog-ovelay .dialog header h3 {
+    font-size: 16px;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.dialog-ovelay .dialog header .fa-close {
+    float: right;
+    color: white;
+    cursor: pointer;
+    transition: all .5s ease;
+    padding: 0 2px;
+    border-radius: 1px
+}
+
+.dialog-ovelay .dialog header .fa-close:hover {
+    color: #b9b9b9
+}
+
+.dialog-ovelay .dialog header .fa-close:active {
+    box-shadow: 0 0 5px #673AB7;
+    color: #a2a2a2
+}
+
+.dialog-ovelay .dialog .dialog-msg {
+    padding: 12px 10px
+}
+
+.dialog-ovelay .dialog .dialog-msg p {
+    margin: 0;
+    font-size: 14px;
+    color: white;
+}
+
+.dialog-ovelay .dialog footer {
+    padding: 10px
+}
+
+.dialog-ovelay .dialog footer .controls .button {
+    padding: 5px 15px;
+    border-radius: 3px
+}

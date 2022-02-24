@@ -17,3 +17,11 @@ class InvalidParam(UserException):
 
     def __str__(self):
         return safe_str(self.message)
+
+
+class BamBackupError(UserException):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return safe_str(self.message)
