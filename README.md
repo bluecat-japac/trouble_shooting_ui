@@ -1,5 +1,7 @@
 # Trouble Shooting UI
 
+Project archived and no longer maintained here. Please contact BlueCat for up-to-date tools and plug-ins.
+
 Trouble-shooting commands UI for perform DNS and network connectivity tests from the DNS server
 
 ## Requirements
