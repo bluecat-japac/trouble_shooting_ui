@@ -1,5 +1,7 @@
 # Trouble Shooting UI
 
+Project archived and no longer maintained here. Please contact BlueCat for up-to-date tools and plug-ins.
+
 Trouble-shooting commands UI for perform DNS and network connectivity tests from the DNS server
 
 ## Requirements
@@ -308,6 +310,7 @@ docker restart <container-name>
     > Note: The **SUBMIT** button is only enable after selecting DNS/DHCP server(s), choosing trap OID and sticking at least one **SNMP version**
 
 7. The command results will appear in **Result** field.
+
 #### BAM Backup By Gateway UI
 Gateway Web can trigger BAM backup command and can download backup file.
 
