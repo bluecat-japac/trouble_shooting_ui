@@ -43,5 +43,20 @@
             "all",
             "admin"
         ]
+    },
+    "bam_backup": {
+        "bam_backup_page": [
+            "all"
+        ]
+    },
+    "analyze_traffic": {
+        "analyze_traffic_page": [
+            "all"
+        ]
+    },
+    "installation": {
+        "installation_page": [
+            "all"
+        ]
     }
 }

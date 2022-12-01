@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block css %}
+<link rel="stylesheet" href="css/installation_page.css?version={{ g.version | urlencode }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{% endblock %}
+
+{% block title %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block heading %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block custom %}
+<script>BAM_IP = "{{ g.user.get_api_netloc() }}"</script>
+<!-- TODO: check value in be -->
+<div id='bamName' hidden>{{ bam_name }}</div>
+
+<div id='statusMsg' style="margin-bottom: 10px;"></div>
+<div id='main'>
+    <div>
+        <label>Configuration</label>
+        <select id="configuration" name="configuration" required="True" onchange="getServers();resetDataTable();">
+            <!-- list Configurations -->
+        </select>
+    </div>
+
+    <div>
+        <label style="margin-bottom:5px">Server</label>
+        <select id="server" class="js-example-basic-multiple" name="server[]" required="True" multiple="multiple" size="1" style="background-color: #182a43;" data-tags="true" onchange="disabledButton()">
+            <!-- list Servers -->
+        </select>
+    </div>
+
+    <div id="footerButton">
+<!--        <input type="button" id="install" class="btn-primary" value="Install" style="width: 100px;margin-left: 0!important;"-->
+<!--               onclick="installTCPDump()">-->
+<!--        <input type="button" id="uninstall" class="btn-primary" style="width: 115px;" value="Uninstall"-->
+<!--               onclick="uninstallTCPDump()">-->
+        <input type="button" id="remove" class="btn-primary" style="width: 100px;margin-left: 0!important;" value="Remove"
+               onclick="removeTCPDump()">
+    </div>
+
+    <!-- table -->
+    <table id='dataTable'>
+        <colgroup style="width: 100%!important">
+            <col style="width:35%">
+            <col style="width:65%">
+        </colgroup>
+        <thead>
+        <tr>
+            <th style="text-align:center">Server</th>
+            <th style="text-align:center">Result</th>
+        </tr>
+        </thead>
+
+        <tbody id="bodyTable">
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="js/installation_page.js?version={{ g.version | urlencode }}"></script>
+<script src="js/common.js?version={{ g.version | urlencode }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}

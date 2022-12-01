@@ -1,0 +1,89 @@
+<!-- Copyright 2020 BlueCat Networks (USA) Inc. and its affiliates. All Rights Reserved. -->
+
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="css/analyze_traffic_page.css?version={{ g.version | urlencode }}">
+{% endblock %}
+
+{% block title %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block heading %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block custom %}
+<script>BAM_IP = "{{ g.user.get_api_netloc() }}"</script>
+<!-- TODO: check value in be -->
+<div id='bamName' hidden>{{ bam_name }}</div>
+
+<div id='statusMsg' style="margin-bottom: 10px;"></div>
+<div id='main'>
+    <label>Configuration</label>
+    <select id="configuration" name="configuration" required="True" onchange="getServers()" onclick="clearField();disabledButton();">
+        <!-- list Configurations -->
+    </select>
+
+    <label>Server</label>
+    <select id="server" name="server" required="True" onchange="getInterface()" onclick="clearField();disabledButton();">
+        <!-- list Servers -->
+    </select>
+
+    <label>Interface Name</label>
+    <select id="interfaceName"  required="True" onchange="checkEnableButton()">
+        <!-- list interface name -->
+    </select>
+
+    <div>
+        <label>Port</label>
+        <input class="text-input" type="number" id="port"  min="0" onkeyup="checkEnableButton();validateInputField();"/>
+        <label id="errorPort" style="color:red; margin-bottom:10px;"></label>
+    </div>
+
+    <div>
+        <label>Packet(s) Capture</label>
+        <input class="text-input" type="number" id="packageToCapture" min="0" name="packageToCapture" onkeyup="checkEnableButton();validateInputField();"/>
+        <label id="errorPackageToCapture" style="color:red; margin-bottom:10px;"></label>
+    </div>
+    <div>
+        <label>Optional</label>
+        <input class="text-input" type="text" id="Optional" name="Optional" />
+    </div>
+
+    <div>
+        <label>Max Capture File Size (MB)</label>
+        <input class="text-input" type="number" id="maxCaptureFile" min="0" name="maxCaptureFile" onkeyup="checkEnableButton();validateInputField();"/>
+        <span class="glyphicon form-control-feedback" id="spanMaxCaptureFile" style="margin-top: 20px;"></span>
+        <label id="errorMaxCaptureFile" style="color:red; margin-bottom:10px;"></label>
+    </div>
+
+    <div>
+        <label>Max Capture Time (Second)</label>
+        <input class="text-input" type="number" id="maxCaptureTime" min="0" name="maxCaptureTime" onkeyup="checkEnableButton();validateInputField();"/>
+        <label id="errorMaxCaptureTime" style="color:red; margin-bottom:10px;"></label>
+    </div>
+
+    <div id="footerButton">
+        <hr>
+        <input type="button" id="start" class="btn-primary" value="Start" disabled style="width: 80px;margin-left: 0!important;"
+            onclick="startTCPDump()">
+        <input type="button" id="stop" class="btn-primary" style="width: 80px;" disabled value="Stop"
+            onclick="stopTCPDump()">
+        <input type="button" id="download" class="btn-secondary" disabled hidden value="Download Capture"
+            onclick="downloadCapture()">
+        <input type="button" id="checkStatus" class="btn-secondary" disabled hidden value="Check Status"
+            onclick="checkStatus()">
+    </div>
+
+    <h4 id="status" style="color: #76ce66"></h4>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="js/analyze_traffic_page.js?version={{ g.version | urlencode }}"></script>
+<script src="js/common.js?version={{ g.version | urlencode }}"></script>
+{% endblock %}

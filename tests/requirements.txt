@@ -1,0 +1,13 @@
+bcrypt==3.2.0
+cffi==1.15.0
+click==8.0.3
+config==0.4.2
+coverage==4.5.1
+cryptography==36.0.1
+Flask==2.0.2
+flask-restplus==0.13.0
+itsdangerous==2.0.1
+jsonschema==3.2.0
+paramiko==2.8.1
+scp==0.14.1
+six==1.16.0

@@ -1,0 +1,102 @@
+<!-- Copyright 2020 BlueCat Networks (USA) Inc. and its affiliates. All Rights Reserved. -->
+
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="css/bam_backup_page.css?version={{ g.version | urlencode }}">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+{% endblock %}
+
+{% block title %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block heading %}
+{{ text['title'] }}
+{% endblock %}
+
+{% block custom %}
+
+<p>{{ text['info'] }}</p>
+<div id="statusMsg"></div>
+
+<div id="maxCountFile" hidden>{{ max_count_file }}</div>
+
+<div id="bkDataDropdown">
+    <a class="fas show-more fa-lg" data-target="#bkData" data-default="open"><span>Backup Data</span></a>
+</div>
+<hr>
+
+<div id="bkData">
+    <input type="button" id="deleteSelected" class="btn-primary btn-delete-selected" value="Delete Selected"
+        onclick="deleteBackupFile()">
+    <table id='bkDataTable'>
+        <colgroup style="width: 650px!important">
+            <col style="width:60%">
+            <col style="width:20%">
+            <col style="width:10%">
+            <col style="width:10%;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Size</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- backup data -->
+
+        </tbody>
+    </table>
+
+</div>
+<div id='checkBKStatus' style="display: none;">
+    <div id="bkStatusDropdown" style="margin-top: 30px;">
+        <a class="fas show-more fa-lg" data-target="#bkStatus" data-default="open"><span>Backup Status</span></a>
+    </div>
+    <hr>
+    <div id="bkStatus" style="margin-left: 10px;">
+        <table id='bkStatusTable'>
+            <colgroup>
+                <col style="width:25%">
+                <col style="width:30%">
+                <col style="width:30%">
+                <col style="width:15%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--backup status -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<div id="footerButton">
+    <hr>
+    <input type="button" id="runBackup" class="btn-primary" value="Run" style="width: 75px;padding-right: 22px;"
+        onclick="runBackup()">
+    <input type="button" id="checkStatus" class="btn-primary" style="width: 130px" value="Check Status"
+        onclick="checkBackupStatus()">
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="js/bam_backup_page.js?version={{ g.version | urlencode }}"></script>
+<script src="js/show_more.js?version={{ g.version | urlencode }}"></script>
+<script src="js/common.js?version={{ g.version | urlencode }}"></script>
+{% endblock %}

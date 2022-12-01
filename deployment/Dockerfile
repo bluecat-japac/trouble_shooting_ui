@@ -1,4 +1,4 @@
-FROM <gateway-image>
+FROM quay.io/bluecat/gateway:21.11.2
 USER root
 
 ENV PERMISSION_PATH          "./workflows/trouble_shooting_ui/deployment/permissions.json"

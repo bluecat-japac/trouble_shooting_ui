@@ -1,0 +1,101 @@
+/* Copyright 2020 BlueCat Networks. All rights reserved. */
+/* Change the white to any color */
+#main {
+ width: 127%;
+}
+
+#footerButton {
+    width: 150%;
+}
+
+#footerButton input[type=button] {
+    margin-left: 10px;
+    /* margin-top: -5px; */
+    float: left;
+    /* width: 90px; */
+    /* height: 40px; */
+    display: block;
+}
+
+hr {
+    padding: 0 0 0 0;
+    width: 66.75%;
+}
+
+
+.dialog-ovelay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.50);
+    z-index: 999999
+}
+
+.dialog-ovelay .dialog {
+    width: 400px;
+    margin: 100px auto 0;
+    margin-top: 250px;
+    background-color: #182a43;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+    border-radius: 3px;
+    overflow: hidden;
+    color: white;
+}
+
+.dialog-ovelay .dialog header {
+    padding: 10px 8px;
+    background-color: #0073ae;
+    color: white;
+    border-bottom: 1px solid #eee
+}
+
+.dialog-ovelay .dialog header h3 {
+    font-size: 16px;
+    margin: 0;
+    color: white;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.dialog-ovelay .dialog header .fa-close {
+    float: right;
+    color: white;
+    cursor: pointer;
+    transition: all .5s ease;
+    padding: 0 2px;
+    border-radius: 1px
+}
+
+.dialog-ovelay .dialog header .fa-close:hover {
+    color: #b9b9b9
+}
+
+.dialog-ovelay .dialog header .fa-close:active {
+    box-shadow: 0 0 5px #673AB7;
+    color: #a2a2a2
+}
+
+.dialog-ovelay .dialog .dialog-msg {
+    padding: 12px 10px
+}
+
+.dialog-ovelay .dialog .dialog-msg p {
+    margin: 0;
+    font-size: 14px;
+    color: white;
+}
+
+.dialog-ovelay .dialog footer {
+    padding: 10px
+}
+
+.dialog-ovelay .dialog footer .controls {
+    direction: rtl
+}
+
+.dialog-ovelay .dialog footer .controls .button {
+    padding: 5px 15px;
+    border-radius: 3px
+}
